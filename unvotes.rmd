@@ -1,0 +1,90 @@
+---
+title: "UN Votes"
+author: "Mine Çetinkaya-Rundel, Timothy Bollé"
+format: html
+editor: visual
+---
+
+## Introduction
+
+Comment les différents pays votent-ils à l'Assemblée Générale des Nations Unies, comment leurs votent ont-ils évolué à travers le temps, et quels sont leurs différences d'opinion sur les différents sujet ?
+Cette analyse vise à proposer des pistes de réponses.
+
+### Packages
+
+Nous allons utiliser les packages **tidyverse**, **lubridate**, et **scales** pour la manipulation de données et la visualisation, le package **DT** pour l'interactivité des tableaux et le package **unvotes** pour les données.
+
+```{r}
+#| label: load-packages
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(DT)
+library(unvotes)
+```
+
+### Données
+
+Les donnnées que nous utilisons proviennent du package **unvotes**.
+Dans le block suivant, nous transformons les données pour joindre différents tableaux fournis avec le package et ainsi faciliter l'analyse.
+
+```{r}
+unvotes <- un_votes %>%
+  inner_join(un_roll_calls, by = "rcid") %>%
+  inner_join(un_roll_call_issues, by = "rcid")
+```
+
+## Les patterns de vote aux Nations Unies
+
+Nous allons créer une visualisation qui affiche l'évolution des votes pour différents pays sur une certaine période.
+
+Nous pouvons facilement changer les pays qui sont affichés en changeant les noms passés dans la fonction `filter`. Notez que le nom du pays dont commencer par une majuscule et avoir exactement la même orthographe que dans les données. La liste complète est présentée en [Annexe](#appendix).
+
+```{r}
+#| label: plot-yearly-yes-issue
+#| message: false
+#| fig-width: 10
+#| fig-height: 6
+
+unvotes %>%
+  filter(country %in% c("United Kingdom", "United States", "Turkey")) %>%
+  mutate(year = year(date)) %>%
+  group_by(country, year, issue) %>%
+  summarize(percent_yes = mean(vote == "yes")) %>%
+  ggplot(mapping = aes(x = year, y = percent_yes, color = country)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "loess", se = FALSE) +
+  facet_wrap(~issue) +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Percentage of 'Yes' votes in the UN General Assembly",
+    subtitle = "1946 to 2019",
+    y = "% Yes",
+    x = "Year",
+    color = "Country"
+  )
+```
+
+## Références
+
+1.  David Robinson (2017). [unvotes](https://CRAN.R-project.org/package=unvotes): United Nations General Assembly Voting Data. R package version 0.2.0.
+2.  Erik Voeten "Data and Analyses of Voting in the UN General Assembly" Routledge Handbook of International Organization, edited by Bob Reinalda (published May 27, 2013).
+3.  Much of the analysis has been modeled on the examples presented in the [unvotes package vignette](https://cran.r-project.org/web/packages/unvotes/vignettes/unvotes.html).
+
+## Appendix {#appendix}
+
+La liste des pays dans le jeu de données est présenté ci-dessous:
+
+```{r}
+#| label: list-countries
+#| echo: false
+
+unvotes %>% 
+  select(country) %>%
+  arrange(country) %>% 
+  distinct() %>%
+  datatable()
+```
