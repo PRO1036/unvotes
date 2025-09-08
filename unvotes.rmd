@@ -1,14 +1,11 @@
 ---
 title: "UN Votes"
-author: "Mine Çetinkaya-Rundel, Timothy Bollé"
 format: html
-editor: visual
 ---
 
 ## Introduction
 
-Comment les différents pays votent-ils à l'Assemblée Générale des Nations Unies, comment leurs votent ont-ils évolué à travers le temps, et quels sont leurs différences d'opinion sur les différents sujet ?
-Cette analyse vise à proposer des pistes de réponses.
+Comment les différents pays votent-ils à l'Assemblée Générale des Nations Unies, comment leurs votent ont-ils évolué à travers le temps, et quels sont leurs différences d'opinion sur les différents sujet ? Cette analyse vise à proposer des pistes de réponses.
 
 ### Packages
 
@@ -28,8 +25,7 @@ library(unvotes)
 
 ### Données
 
-Les donnnées que nous utilisons proviennent du package **unvotes**.
-Dans le block suivant, nous transformons les données pour joindre différents tableaux fournis avec le package et ainsi faciliter l'analyse.
+Les donnnées que nous utilisons proviennent du package **unvotes**. Dans le block suivant, nous transformons les données pour joindre différents tableaux fournis avec le package et ainsi faciliter l'analyse.
 
 ```{r}
 unvotes <- un_votes %>%
@@ -41,7 +37,7 @@ unvotes <- un_votes %>%
 
 Nous allons créer une visualisation qui affiche l'évolution des votes pour différents pays sur une certaine période.
 
-Nous pouvons facilement changer les pays qui sont affichés en changeant les noms passés dans la fonction `filter`. Notez que le nom du pays dont commencer par une majuscule et avoir exactement la même orthographe que dans les données. La liste complète est présentée en [Annexe](#appendix).
+Nous pouvons facilement changer les pays qui sont affichés en changeant les noms passés dans la fonction `filter`. Notez que le nom du pays doit commencer par une majuscule et avoir exactement la même orthographe que dans les données. La liste complète est présentée en [Annexe](#appendix).
 
 ```{r}
 #| label: plot-yearly-yes-issue
@@ -50,7 +46,7 @@ Nous pouvons facilement changer les pays qui sont affichés en changeant les nom
 #| fig-height: 6
 
 unvotes %>%
-  filter(country %in% c("United Kingdom", "United States", "Turkey")) %>%
+  filter(country %in% c("Canada", "United States", "France")) %>%
   mutate(year = year(date)) %>%
   group_by(country, year, issue) %>%
   summarize(percent_yes = mean(vote == "yes")) %>%
@@ -76,7 +72,7 @@ unvotes %>%
 
 ## Appendix {#appendix}
 
-La liste des pays dans le jeu de données est présenté ci-dessous:
+La liste des pays présents dans le jeu de données est présentée ci-dessous:
 
 ```{r}
 #| label: list-countries
